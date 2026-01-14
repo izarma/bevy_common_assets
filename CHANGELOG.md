@@ -1,6 +1,9 @@
 # Changelog
 
+## v0.15.0 - 14.01.2026
+- Update to Bevy 0.18
 - depend on Bevy subcrates
+- remove default feature (accidentally was `csv`)
 
 ## v0.14.0 - 01.10.2025
 - Support for CBOR files (@Kamduis in [#49](https://github.com/NiklasEi/bevy_common_assets/pull/49))
