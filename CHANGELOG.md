@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.16.0 - 22.03.2026
+- Add asset savers to all supported formats
+
 ## v0.15.0 - 14.01.2026
 - Update to Bevy 0.18
 - depend on Bevy subcrates
