@@ -3,13 +3,14 @@ use bevy_asset::io::Reader;
 use bevy_asset::{Asset, AssetApp, AssetLoader, AsyncWriteExt, LoadContext, saver::AssetSaver};
 use bevy_reflect::TypePath;
 use serde::{Deserialize, Serialize};
-use serde_ron::de::from_bytes;
+use serde_ron::Options;
 use std::marker::PhantomData;
 use thiserror::Error;
 
 /// Plugin to load your asset type `A` from ron files.
 pub struct RonAssetPlugin<A> {
     extensions: Vec<&'static str>,
+    options: Options,
     _marker: PhantomData<A>,
 }
 
@@ -21,6 +22,7 @@ where
         app.init_asset::<A>()
             .register_asset_loader(RonAssetLoader::<A> {
                 extensions: self.extensions.clone(),
+                options: self.options.clone(),
                 _marker: PhantomData,
             });
     }
@@ -34,8 +36,23 @@ where
     pub fn new(extensions: &[&'static str]) -> Self {
         Self {
             extensions: extensions.to_owned(),
+            options: Options::default(),
             _marker: PhantomData,
         }
+    }
+
+    /// Customize RON deserialization options.
+    ///
+    /// ```no_run
+    /// use serde_ron::{extensions::Extensions, Options};
+    ///
+    /// App::new()
+    ///     .add_plugins(RonAssetPlugin::<Level>::new(&["level.ron"])
+    ///         .with_options(Options::default().with_default_extension(Extensions::IMPLICIT_SOME)));
+    /// ```
+    pub fn with_options(mut self, options: Options) -> Self {
+        self.options = options;
+        self
     }
 }
 
@@ -43,6 +60,7 @@ where
 #[derive(TypePath)]
 pub struct RonAssetLoader<A> {
     extensions: Vec<&'static str>,
+    options: Options,
     _marker: PhantomData<A>,
 }
 
@@ -81,7 +99,7 @@ where
     ) -> Result<Self::Asset, Self::Error> {
         let mut bytes = Vec::new();
         reader.read_to_end(&mut bytes).await?;
-        let asset = from_bytes::<A>(&bytes)?;
+        let asset = self.options.from_bytes::<A>(&bytes)?;
         Ok(asset)
     }
 
