@@ -5,11 +5,7 @@ use serde_ron::{Options, extensions::Extensions};
 
 fn main() {
     App::new()
-        .add_plugins((
-            DefaultPlugins,
-            RonAssetPlugin::<Level>::new(&["level.ron"])
-                .with_options(Options::default().with_default_extension(Extensions::IMPLICIT_SOME)),
-        ))
+        .add_plugins((DefaultPlugins, RonAssetPlugin::<Level>::new(&["level.ron"])))
         .init_state::<AppState>()
         .add_systems(Startup, setup)
         .add_systems(Update, spawn_level.run_if(in_state(AppState::Loading)))
@@ -33,7 +29,7 @@ fn spawn_level(
     mut state: ResMut<NextState<AppState>>,
 ) {
     if let Some(level) = levels.remove(level.0.id()) {
-        // Check alpha -> fully opaque if None
+        // Default to fully opaque if alpha is None.
         let color = Color::default().with_alpha(level.alpha.unwrap_or(1.0));
         for position in level.positions {
             commands.spawn((

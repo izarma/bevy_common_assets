@@ -3,7 +3,7 @@ use bevy_asset::io::Reader;
 use bevy_asset::{Asset, AssetApp, AssetLoader, AsyncWriteExt, LoadContext, saver::AssetSaver};
 use bevy_reflect::TypePath;
 use serde::{Deserialize, Serialize};
-use serde_ron::Options;
+use serde_ron::{Options, extensions::Extensions};
 use std::marker::PhantomData;
 use thiserror::Error;
 
@@ -33,10 +33,12 @@ where
     for<'de> A: serde::Deserialize<'de> + Asset,
 {
     /// Create a new plugin that will load assets from files with the given extensions.
+    ///
+    /// Enables [`Extensions::IMPLICIT_SOME`] by default.
     pub fn new(extensions: &[&'static str]) -> Self {
         Self {
             extensions: extensions.to_owned(),
-            options: Options::default(),
+            options: Options::default().with_default_extension(Extensions::IMPLICIT_SOME),
             _marker: PhantomData,
         }
     }
@@ -48,7 +50,9 @@ where
     ///
     /// App::new()
     ///     .add_plugins(RonAssetPlugin::<Level>::new(&["level.ron"])
-    ///         .with_options(Options::default().with_default_extension(Extensions::IMPLICIT_SOME)));
+    ///         .with_options(Options::default().with_default_extension(
+    ///             Extensions::UNWRAP_NEWTYPES | Extensions::IMPLICIT_SOME,
+    ///         )));
     /// ```
     pub fn with_options(mut self, options: Options) -> Self {
         self.options = options;
