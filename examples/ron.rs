@@ -1,7 +1,6 @@
 use bevy::prelude::*;
 use bevy::reflect::TypePath;
 use bevy_common_assets::ron::RonAssetPlugin;
-use serde_ron::{Options, extensions::Extensions};
 
 fn main() {
     App::new()

@@ -46,6 +46,8 @@ where
     /// Customize RON deserialization options.
     ///
     /// ```no_run
+    /// # use bevy::prelude::*;
+    /// # use bevy_common_assets::ron::RonAssetPlugin;
     /// use serde_ron::{extensions::Extensions, Options};
     ///
     /// App::new()
@@ -53,6 +55,10 @@ where
     ///         .with_options(Options::default().with_default_extension(
     ///             Extensions::UNWRAP_NEWTYPES | Extensions::IMPLICIT_SOME,
     ///         )));
+    /// # #[derive(serde::Deserialize, Asset, TypePath)]
+    /// # struct Level {
+    /// #     value: Option<f32>,
+    /// # }
     /// ```
     pub fn with_options(mut self, options: Options) -> Self {
         self.options = options;
